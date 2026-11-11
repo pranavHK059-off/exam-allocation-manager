@@ -560,41 +560,20 @@
         margin: 14px 18px 18px;
         line-height: 1.6;
       }
-      /* Inventory panels are native dropdowns; the chevron makes that clear. */
-      .room-usage-panel summary {
-        align-items: center;
-      }
-      .room-usage-panel summary strong {
-        flex: 1 1 auto;
-      }
-      .room-usage-panel summary span {
-        margin-left: auto;
-        text-align: right;
-      }
-      .room-usage-panel summary::after {
-        content: "▾";
-        flex: 0 0 auto;
-        margin-left: 8px;
-        color: #758078;
-        font-size: 15px;
-        line-height: 1;
-        transition: transform 0.15s ease;
-      }
-      .room-usage-panel[open] summary::after {
-        transform: rotate(180deg);
-      }
+      /* Compact summary of only resources left unused after allocation. */
+      .unused-resources { margin-top: 26px; }
+      .leftover-section-head { margin-bottom: 10px; }
+      .leftover-section-head p { margin-bottom: 0; }
+      .leftover-panel { padding: 0 16px; margin-bottom: 12px; }
+      .leftover-panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 2px; border-bottom: 1px solid var(--line); font-size: 13px; }
+      .leftover-panel-head span { color: var(--muted); font-size: 12px; text-align: right; font-weight: 400; }
+      .leftover-panel .table-wrap { overflow-x: auto; }
+      .leftover-panel .data-table td { white-space: normal; }
+      .resource-subline { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+      .leftover-note { margin: 12px 2px 16px; line-height: 1.5; }
       @media (max-width: 760px) {
-        .resource-inventory summary {
-          flex-wrap: wrap;
-        }
-        .resource-inventory summary span {
-          flex: 1 1 calc(100% - 28px);
-          margin-left: 0;
-          text-align: left;
-        }
-        .equipment-footnote {
-          margin: 12px 14px 16px;
-        }
+        .leftover-panel-head { align-items: flex-start; flex-direction: column; gap: 4px; }
+        .leftover-panel-head span { text-align: left; }
       }
       @media (max-width: 760px) {
         .reserve-panel {
@@ -751,7 +730,7 @@
         background: #fff0ef;
         color: #a34740;
       }
-      .room-usage-panel{margin:0 0 16px;padding:0 16px}.room-usage-panel summary{cursor:pointer;list-style:none;padding:15px 2px;display:flex;justify-content:space-between;gap:12px;font-size:12px}.room-usage-panel summary::-webkit-details-marker{display:none}.room-usage-panel summary span{color:#758078;font-weight:400}.room-usage-panel .table-wrap{max-height:340px;overflow:auto}.resource-inventory .table-wrap{max-height:none;overflow-x:auto}.utilization-cell{display:grid;grid-template-columns:70px minmax(60px,110px);gap:8px;align-items:center}.util-track{height:6px;border-radius:8px;background:#edf0ec;overflow:hidden}.util-track b{display:block;height:100%;background:#52805d}.room-grid {
+      .room-usage-panel{margin:0 0 16px;padding:0 16px}.resource-inventory .table-wrap{max-height:none;overflow-x:auto}.utilization-cell{display:grid;grid-template-columns:70px minmax(60px,110px);gap:8px;align-items:center}.util-track{height:6px;border-radius:8px;background:#edf0ec;overflow:hidden}.util-track b{display:block;height:100%;background:#52805d}.room-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(min(100%, 290px), 1fr));
         gap: 14px;
@@ -1830,7 +1809,7 @@
           let parsed = parseCSV(reader.result);
           data[k] = { ...parsed, fileName: file.name, errors: [] };
           validate();
-          if (["http:", "https:"].includes(location.protocol)) {
+          if (location.protocol === "http:") {
             try {
               let fd = new FormData();
               fd.append("file", file);
@@ -1958,7 +1937,7 @@
                   "",
                 )}${unresolved.length > 8 ? `<div class="issue-line">And ${unresolved.length - 8} more…</div>` : ""}</div>`
             : ""
-        }<div class="section-head"><div><h2>Schedule</h2><p>Same-session candidates share a room and are assigned numbered seats.</p></div><div class="search-row"><input id="allocation-search" class="search-input" placeholder="Search room, student, proctor, or equipment" value="${esc(allocationSearch)}" oninput="searchAllocation(this.value)"></div></div><div class="section-head" style="margin-top:0"><div class="tabs"><button class="${view === "room" ? "on" : ""}" onclick="setView('room')">Room seating</button><button class="${view === "candidate" ? "on" : ""}" onclick="setView('candidate')">By candidate</button><button class="${view === "proctor" ? "on" : ""}" onclick="setView('proctor')">By proctor</button></div><span class="entry-count">Showing ${count} of ${total} ${view === "room" ? "room sessions" : "entries"}</span></div>${body}${total > visibleCount ? `<div class="pager"><button class="btn" onclick="showMore()">Show more (${Math.min(20, total - visibleCount)} more)</button></div>` : ""}<div class="tech-note"><strong>System:</strong> Flask REST API · Pandas CSV validation · Python allocation service · browser seat map. The allocation logic groups matching exam sessions, checks room capacity, candidate overlaps, proctor subject conflicts, availability windows and shared equipment quantities.</div><div class="actions"><button class="btn" onclick="go('data')">Manage data</button><button class="btn primary" onclick="generate()">Regenerate allocation</button></div>`;
+        }<div class="section-head"><div><h2>Schedule</h2><p>Same-session candidates share a room and are assigned numbered seats.</p></div><div class="search-row"><input id="allocation-search" class="search-input" placeholder="Search room, student, proctor, or equipment" value="${esc(allocationSearch)}" oninput="searchAllocation(this.value)"></div></div><div class="section-head" style="margin-top:0"><div class="tabs"><button class="${view === "room" ? "on" : ""}" onclick="setView('room')">Room seating</button><button class="${view === "candidate" ? "on" : ""}" onclick="setView('candidate')">By candidate</button><button class="${view === "proctor" ? "on" : ""}" onclick="setView('proctor')">By proctor</button></div><span class="entry-count">Showing ${count} of ${total} ${view === "room" ? "room sessions" : "entries"}</span></div>${body}${total > visibleCount ? `<div class="pager"><button class="btn" onclick="showMore()">Show more (${Math.min(20, total - visibleCount)} more)</button></div>` : ""}${unusedResourcesSection()}<div class="tech-note"><strong>System:</strong> Flask REST API · Pandas CSV validation · Python allocation service · browser seat map. The allocation logic groups matching exam sessions, checks room capacity, candidate overlaps, proctor subject conflicts, availability windows and shared equipment quantities.</div><div class="actions"><button class="btn" onclick="go('data')">Manage data</button><button class="btn primary" onclick="generate()">Regenerate allocation</button></div>`;
       }
       async function generate() {
         let issues = errors();
@@ -1966,7 +1945,7 @@
           go("data");
           return;
         }
-        if (["http:", "https:"].includes(location.protocol)) {
+        if (location.protocol === "http:") {
           try {
             let response = await fetch("/api/allocate", {
                 method: "POST",
@@ -2174,7 +2153,7 @@
               apiErrors: [],
             };
             let issues = errors();
-            if (["http:", "https:"].includes(location.protocol)) {
+            if (location.protocol === "http:") {
               try {
                 const fd = new FormData();
                 fd.append("file", file);
@@ -2236,7 +2215,7 @@
             go("data");
             return;
           }
-          if (["http:", "https:"].includes(location.protocol)) {
+          if (location.protocol === "http:") {
             try {
               const response = await fetch("/api/allocate", {
                   method: "POST",
@@ -2409,7 +2388,7 @@
             };
             allocation = [];
             let issues = errors();
-            if (["http:", "https:"].includes(location.protocol)) {
+            if (location.protocol === "http:") {
               try {
                 const fd = new FormData();
                 fd.append("file", file);
@@ -2579,7 +2558,7 @@
           return;
         }
         allocation = [];
-        if (["http:", "https:"].includes(location.protocol))
+        if (location.protocol === "http:")
           submitTableToAPI(k).catch((e) =>
             setNotice(
               `Restored locally, but the server could not be updated: ${e.message}`,
@@ -3620,87 +3599,48 @@
         const rooms = (data.rooms?.records || []).map((room) => {
           const roomId = String(room.room_id ?? "").trim();
           const roomKey = roomId.toLowerCase();
-          const unusable = Math.max(0, Number(room.unusable_seats) || 0);
           const capacity = Math.max(0, Number(room.capacity) || 0);
+          const unusable = Math.max(0, Number(room.unusable_seats) || 0);
           const usable = Math.max(0, capacity - unusable);
-          const byBooking = new Map();
-          allocation.filter((entry) => String(entry.room_id ?? "") === roomId).forEach((entry) => {
-            const key = [entry.date, entry.subject, entry.paper, entry.start ?? entry.start_minute].join("|");
-            if (!byBooking.has(key)) byBooking.set(key, { date: entry.date, start: Number(entry.start ?? entry.start_minute) || 0, end: Number(entry.end ?? entry.end_minute) || 0, seats: 0 });
-            const booking = byBooking.get(key);
-            booking.end = Math.max(booking.end, Number(entry.end ?? entry.end_minute) || 0);
-            booking.seats += 1;
-          });
-          const bookings = [...byBooking.values()];
-          const events = [];
-          bookings.forEach((booking) => {
-            events.push({ date: booking.date, time: booking.start, delta: booking.seats });
-            events.push({ date: booking.date, time: booking.end, delta: -booking.seats });
-          });
-          events.sort((a, b) => a.date.localeCompare(b.date) || a.time - b.time || a.delta - b.delta);
-          let active = 0, peak = 0, activeDate = null;
-          events.forEach((event) => {
-            if (event.date !== activeDate) { active = 0; activeDate = event.date; }
-            active += event.delta;
-            peak = Math.max(peak, active);
-          });
+          const hasBooking = allocation.some((entry) => String(entry.room_id ?? "").trim().toLowerCase() === roomKey);
           const rawStatus = String(room.status || "available").trim().toLowerCase();
-          const held = reserveRoomId && roomKey === reserveRoomId;
-          const state = rawStatus !== "available"
-            ? (room.status || "Unavailable")
-            : usable === 0
-              ? "No usable seats"
-              : held
-                ? "Held in reserve"
-                : bookings.length
-                  ? "Used"
-                  : "Empty / available";
-          const percent = usable ? Math.min(100, Math.round(peak * 100 / usable)) : 0;
-          return { roomId, capacity, unusable, usable, bookings: bookings.length, peak, state, percent };
-        });
-        const usedCount = rooms.filter((room) => room.bookings > 0).length;
+          const held = Boolean(reserveRoomId && roomKey === reserveRoomId);
+          let state = "";
+          if (rawStatus === "available" && usable > 0 && held) state = "Held in reserve";
+          else if (rawStatus === "available" && usable > 0 && !hasBooking) state = "Empty / available";
+          return { roomId, usable, state };
+        }).filter((room) => room.state);
+
+        if (!rooms.length) return "";
         const emptyCount = rooms.filter((room) => room.state === "Empty / available").length;
         const reservedCount = rooms.filter((room) => room.state === "Held in reserve").length;
-        return `<details class="card room-usage-panel resource-inventory"><summary><strong>Room inventory &amp; empty rooms</strong><span>${emptyCount} empty · ${reservedCount} held in reserve · ${usedCount} used · ${rooms.length} total</span></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Room</th><th>Usable / installed seats</th><th>Bookings</th><th>Peak concurrent seating</th><th>Status</th></tr></thead><tbody>${rooms.map((room) => `<tr><td><strong>${esc(room.roomId)}</strong></td><td>${room.usable} / ${room.capacity}${room.unusable ? ` · ${room.unusable} unavailable` : ""}</td><td>${room.bookings}</td><td><div class="utilization-cell"><span>${room.peak} / ${room.usable}</span><i class="util-track"><b style="width:${room.percent}%"></b></i></div></td><td><span class="status-pill ${room.state === "Used" ? "allocated" : room.state === "Empty / available" ? "" : room.state === "Held in reserve" ? "partial" : "unassigned"}">${esc(room.state)}</span></td></tr>`).join("") || `<tr><td colspan="5">No room records are loaded.</td></tr>`}</tbody></table></div><p class="footer-note">Every room from the uploaded room table is listed, including rooms never used by this schedule, rooms held as contingency, and rooms unavailable for operational reasons. Rooms can be reused after a booking ends.</p></details>`;
+        return `<section class="card room-usage-panel resource-inventory leftover-panel"><div class="leftover-panel-head"><strong>Unused rooms</strong><span>${emptyCount} empty${reservedCount ? ` · ${reservedCount} held in reserve` : ""}</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Room</th><th>Usable seats</th><th>Status</th></tr></thead><tbody>${rooms.map((room) => `<tr><td><strong>${esc(room.roomId)}</strong></td><td>${room.usable}</td><td><span class="status-pill ${room.state === "Held in reserve" ? "partial" : "allocated"}">${esc(room.state)}</span></td></tr>`).join("")}</tbody></table></div></section>`;
       }
 
       function proctorUtilizationPanel() {
         const reservedId = String(allocationMeta.reserve?.proctor?.proctor_id ?? "").trim().toLowerCase();
-        const bookingsByProctor = new Map();
+        const assignedIds = new Set();
         allocation.forEach((entry) => {
-          const id = String(entry.proctor_id ?? "").trim();
-          if (!id || !entry.room_id) return;
-          const key = [id.toLowerCase(), entry.room_id, entry.date, entry.subject, entry.paper, entry.start ?? entry.start_minute].join("|");
-          if (!bookingsByProctor.has(id.toLowerCase())) bookingsByProctor.set(id.toLowerCase(), new Map());
-          const personBookings = bookingsByProctor.get(id.toLowerCase());
-          if (!personBookings.has(key)) personBookings.set(key, {
-            room: String(entry.room_id), date: String(entry.date ?? ""),
-            start: Number(entry.start ?? entry.start_minute) || 0,
-            subject: String(entry.subject ?? ""), paper: String(entry.paper ?? "")
-          });
+          const id = String(entry.proctor_id ?? "").trim().toLowerCase();
+          if (id && entry.room_id) assignedIds.add(id);
         });
-        const proctors = (data.proctors?.records || []).map((person) => {
+        const spare = (data.proctors?.records || []).map((person) => {
           const id = String(person.proctor_id ?? "").trim();
           const key = id.toLowerCase();
-          const bookings = [...(bookingsByProctor.get(key)?.values() || [])].sort((a, b) => a.date.localeCompare(b.date) || a.start - b.start || a.room.localeCompare(b.room));
-          const held = reservedId && key === reservedId;
-          const state = bookings.length ? "Assigned" : held ? "Held in reserve" : "Spare / not assigned";
-          const sessionSummary = bookings.slice(0, 2).map((booking) => `${booking.date} ${clock(booking.start)} · ${booking.subject} ${booking.paper} · ${booking.room}`).join("; ");
+          if (!id || assignedIds.has(key)) return null;
+          const held = Boolean(reservedId && key === reservedId);
           return {
             id,
-            name: String(person.proctor_name ?? ""),
-            from: String(person.available_from ?? ""),
-            to: String(person.available_to ?? ""),
-            subjects: String(person.subjects_taught ?? "none").trim() || "none",
-            bookings: bookings.length,
-            state,
-            sessionSummary: sessionSummary ? `${sessionSummary}${bookings.length > 2 ? `; +${bookings.length - 2} more` : ""}` : "No room bookings in this allocation"
+            name: String(person.proctor_name ?? "").trim() || id,
+            availability: `${String(person.available_from ?? "")}–${String(person.available_to ?? "")}`,
+            state: held ? "Held in reserve" : "Not assigned"
           };
-        });
-        const assignedCount = proctors.filter((person) => person.bookings > 0).length;
-        const spareCount = proctors.filter((person) => person.state === "Spare / not assigned").length;
-        const heldCount = proctors.filter((person) => person.state === "Held in reserve").length;
-        return `<details class="card room-usage-panel resource-inventory"><summary><strong>Proctor inventory &amp; spare staff</strong><span>${assignedCount} assigned · ${spareCount} not assigned · ${heldCount} held in reserve · ${proctors.length} total</span></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Proctor</th><th>Availability</th><th>Subjects taught</th><th>Room bookings</th><th>Assignment / status</th></tr></thead><tbody>${proctors.map((person) => `<tr><td><strong>${esc(person.name || person.id)}</strong><small style="display:block;color:var(--muted)">${esc(person.id)}</small></td><td>${esc(person.from)}–${esc(person.to)}</td><td>${esc(person.subjects)}</td><td>${person.bookings}</td><td><span class="status-pill ${person.state === "Assigned" ? "allocated" : person.state === "Held in reserve" ? "partial" : ""}">${esc(person.state)}</span><small style="display:block;color:var(--muted);margin-top:4px">${esc(person.sessionSummary)}</small></td></tr>`).join("") || `<tr><td colspan="5">No proctor records are loaded.</td></tr>`}</tbody></table></div><p class="footer-note">All proctors from the uploaded staff table are listed. “Spare / not assigned” means the person received no room booking in this generated plan; check their availability and subjects taught before treating them as eligible for a particular sitting.</p></details>`;
+        }).filter(Boolean);
+
+        if (!spare.length) return "";
+        const heldCount = spare.filter((person) => person.state === "Held in reserve").length;
+        const spareCount = spare.length - heldCount;
+        return `<section class="card room-usage-panel resource-inventory leftover-panel"><div class="leftover-panel-head"><strong>Spare proctors</strong><span>${spareCount} not assigned${heldCount ? ` · ${heldCount} held in reserve` : ""}</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Proctor</th><th>Available</th><th>Status</th></tr></thead><tbody>${spare.map((person) => `<tr><td><strong>${esc(person.name)}</strong><small class="resource-subline">${esc(person.id)}</small></td><td>${esc(person.availability)}</td><td><span class="status-pill ${person.state === "Held in reserve" ? "partial" : "allocated"}">${esc(person.state)}</span></td></tr>`).join("")}</tbody></table></div></section>`;
       }
 
       function equipmentInventoryPanel() {
@@ -3712,15 +3652,11 @@
           return Math.max(0, Number(match?.[1]) || 0);
         };
         const eventsByKind = new Map();
-        const requestCountByKind = new Map();
-        const shortageCountByKind = new Map();
         allocation.forEach((entry) => {
           const assignedKinds = Array.isArray(entry.equipment_allocations) && entry.equipment_allocations.length
             ? entry.equipment_allocations.map(normalize).filter((kind) => kind && !["none", "n/a", "na", "null"].includes(kind))
             : (String(entry.equipment_status ?? "") === "assigned" && !["", "none", "n/a", "na", "null"].includes(normalize(entry.equipment)) ? [normalize(entry.equipment)] : []);
-          const uniqueAssigned = [...new Set(assignedKinds)];
-          uniqueAssigned.forEach((kind) => {
-            requestCountByKind.set(kind, (requestCountByKind.get(kind) || 0) + 1);
+          [...new Set(assignedKinds)].forEach((kind) => {
             if (!eventsByKind.has(kind)) eventsByKind.set(kind, []);
             const start = Number(entry.start ?? entry.start_minute);
             const end = Number(entry.end ?? entry.end_minute);
@@ -3729,12 +3665,9 @@
               eventsByKind.get(kind).push({ date: String(entry.date ?? ""), time: end, delta: -1 });
             }
           });
-          const missingKinds = Array.isArray(entry.missing_equipment) && entry.missing_equipment.length
-            ? entry.missing_equipment.map(normalize)
-            : (String(entry.equipment_status ?? "") === "quantity_shortage" ? [normalize(entry.equipment)].filter((kind) => kind && !["none", "n/a", "na", "null"].includes(kind)) : []);
-          [...new Set(missingKinds)].forEach((kind) => shortageCountByKind.set(kind, (shortageCountByKind.get(kind) || 0) + 1));
         });
-        const inventory = (data.equipment?.records || []).map((item) => {
+
+        const remaining = (data.equipment?.records || []).map((item) => {
           const type = String(item.equipment_type ?? "").trim();
           const key = normalize(type);
           const quantity = Math.max(0, Number(item.quantity) || 0);
@@ -3748,14 +3681,19 @@
             peak = Math.max(peak, active);
           });
           const spare = Math.max(0, operational - peak);
-          const shortages = shortageCountByKind.get(key) || 0;
-          const state = shortages ? "Shortage detected" : spare > 0 ? "Spare stock available" : peak > 0 ? "Fully used at peak" : reserved ? "Held in reserve" : "Not requested";
-          return { type, quantity, reserved, operational, peak, spare, requests: requestCountByKind.get(key) || 0, shortages, state };
-        });
-        const spareUnits = inventory.reduce((total, item) => total + item.spare, 0);
-        const reservedUnits = inventory.reduce((total, item) => total + item.reserved, 0);
-        const shortageTypes = inventory.filter((item) => item.shortages > 0).length;
-        return `<details class="card room-usage-panel resource-inventory"><summary><strong>Equipment inventory &amp; spare stock</strong><span>${spareUnits} spare units at peak · ${reservedUnits} held in reserve · ${shortageTypes} type(s) with shortages</span></summary><div class="table-wrap"><table class="data-table"><thead><tr><th>Equipment type</th><th>Total quantity</th><th>Held in reserve</th><th>Usable by schedule</th><th>Peak concurrent use</th><th>Spare at peak</th><th>Requests assigned / shortage</th><th>Status</th></tr></thead><tbody>${inventory.map((item) => `<tr><td><strong>${esc(item.type)}</strong></td><td>${item.quantity}</td><td>${item.reserved}</td><td>${item.operational}</td><td>${item.peak} / ${item.operational}</td><td><strong>${item.spare}</strong></td><td>${item.requests}${item.shortages ? ` / <span style="color:var(--red)">${item.shortages} short</span>` : ""}</td><td><span class="status-pill ${item.shortages ? "unassigned" : item.spare > 0 || item.state === "Not requested" ? "allocated" : item.reserved ? "partial" : ""}">${esc(item.state)}</span></td></tr>`).join("") || `<tr><td colspan="8">No equipment inventory records are loaded.</td></tr>`}</tbody></table></div><p class="footer-note">“Spare at peak” is the quantity outside the protected reserve after subtracting the highest simultaneous assigned use for each equipment type. Equipment can be reused by non-overlapping sittings. Support requirements such as readers and scribes are included when the allocation engine reports them in equipment_allocations.</p></details>`;
+          return { type, spare, reserved };
+        }).filter((item) => item.spare > 0 || item.reserved > 0);
+
+        if (!remaining.length) return "";
+        const spareUnits = remaining.reduce((total, item) => total + item.spare, 0);
+        const reservedUnits = remaining.reduce((total, item) => total + item.reserved, 0);
+        return `<section class="card room-usage-panel resource-inventory leftover-panel"><div class="leftover-panel-head"><strong>Spare equipment</strong><span>${spareUnits} spare${reservedUnits ? ` · ${reservedUnits} held in reserve` : ""}</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Equipment type</th><th>Spare units</th><th>Held in reserve</th></tr></thead><tbody>${remaining.map((item) => `<tr><td><strong>${esc(item.type)}</strong></td><td>${item.spare}</td><td>${item.reserved}</td></tr>`).join("")}</tbody></table></div><p class="footer-note leftover-note">Spare units are calculated after peak simultaneous use; held reserve units are kept separate.</p></section>`;
+      }
+
+      function unusedResourcesSection() {
+        const panels = [roomUtilizationPanel(), proctorUtilizationPanel(), equipmentInventoryPanel()].filter(Boolean);
+        if (!panels.length) return "";
+        return `<section class="unused-resources"><div class="section-head leftover-section-head"><div><h2>Resources left unused</h2><p>Only rooms, proctors, and equipment remaining after the allocation are shown.</p></div></div>${panels.join("")}</section>`;
       }
 
       function allocationPage() {
@@ -3966,7 +3904,7 @@
           usedRooms = new Set(
             allocation.filter((a) => a.room_id).map((a) => a.room_id),
           ).size;
-        return `<div class="eyebrow">ALLOCATION WORKSPACE · ${allocation.length} EXAM ENTRIES</div><h1>Room seating &amp; allocation</h1><p class="lead">Sessions are prioritized by constraint, packed into seats, and assigned one eligible proctor per occupied room booking. Held contingency resources stay free.</p><div class="metric-row"><div class="card metric"><label>Fully allocated</label><strong>${allocatedCount}</strong><span>of ${allocation.length} exam entries</span></div><div class="card metric"><label>Needs review</label><strong>${unresolved.length}</strong><span>Partial or unassigned</span></div><div class="card metric"><label>Rooms used across all sessions</label><strong>${usedRooms}</strong><span>Distinct rooms assigned; reused between sessions</span></div><div class="card metric"><label>Independent checks</label><strong>${checks.length ? "Review" : "Pass"}</strong><span>${checks.length ? `${checks.length} plan issue(s) detected` : "Room, staff and equipment checks passed"}</span></div></div>${roomUtilizationPanel()}${proctorUtilizationPanel()}${equipmentInventoryPanel()}${reserveControls()}${
+        return `<div class="eyebrow">ALLOCATION WORKSPACE · ${allocation.length} EXAM ENTRIES</div><h1>Room seating &amp; allocation</h1><p class="lead">Sessions are prioritized by constraint, packed into seats, and assigned one eligible proctor per occupied room booking. Held contingency resources stay free.</p><div class="metric-row"><div class="card metric"><label>Fully allocated</label><strong>${allocatedCount}</strong><span>of ${allocation.length} exam entries</span></div><div class="card metric"><label>Needs review</label><strong>${unresolved.length}</strong><span>Partial or unassigned</span></div><div class="card metric"><label>Rooms used across all sessions</label><strong>${usedRooms}</strong><span>Distinct rooms assigned; reused between sessions</span></div><div class="card metric"><label>Independent checks</label><strong>${checks.length ? "Review" : "Pass"}</strong><span>${checks.length ? `${checks.length} plan issue(s) detected` : "Room, staff and equipment checks passed"}</span></div></div>${reserveControls()}${
           staffingDiagnostics.length
             ? `<div class="card issues" style="margin-bottom:15px"><strong style="color:#954c45">Staffing bottleneck detected</strong>${staffingDiagnostics.map((item) => `<div class="issue-line">${esc(item.message || `${item.start_time}: insufficient eligible proctors.`)}</div>`).join("")}</div>`
             : ""
@@ -3992,7 +3930,7 @@
                 )
                 .join("")}</div>`
             : ""
-        }<div class="section-head"><div><h2>Schedule</h2><p>Rooms are reused after bookings end. Search room, student, or proctor.</p></div><div class="search-row"><input id="allocation-search" class="search-input" placeholder="Search room, student, proctor, or equipment" value="${esc(allocationSearch)}" oninput="searchAllocation(this.value)"></div></div><div class="section-head" style="margin-top:0"><div class="tabs"><button class="${view === "room" ? "on" : ""}" onclick="setView('room')">Room seating</button><button class="${view === "candidate" ? "on" : ""}" onclick="setView('candidate')">By candidate</button><button class="${view === "proctor" ? "on" : ""}" onclick="setView('proctor')">By proctor</button><button class="${view === "equipment" ? "on" : ""}" onclick="setView('equipment')">By equipment</button></div><span class="entry-count">Showing ${shown} of ${total} ${view === "room" ? "room bookings" : view === "equipment" ? "equipment requests" : "entries"}</span></div>${body}${total > visibleCount ? `<div class="pager"><button class="btn" onclick="showMore()">Show more (${Math.min(20, total - visibleCount)} more)</button></div>` : ""}<div class="tech-note"><strong>Allocation method:</strong> subject-pure room assignments, least-waste subset-sum room bundles when staffing permits, round-robin allocation when proctors are the bottleneck, one proctor per occupied room, protected contingency reserves, and independent room, proctor, and equipment checks. Unresolved entries may indicate resource shortages rather than a seating bug.</div><div class="actions"><button class="btn" onclick="go('data')">Manage data</button><button class="btn primary" onclick="generate()">Regenerate allocation</button></div>`;
+        }<div class="section-head"><div><h2>Schedule</h2><p>Rooms are reused after bookings end. Search room, student, or proctor.</p></div><div class="search-row"><input id="allocation-search" class="search-input" placeholder="Search room, student, proctor, or equipment" value="${esc(allocationSearch)}" oninput="searchAllocation(this.value)"></div></div><div class="section-head" style="margin-top:0"><div class="tabs"><button class="${view === "room" ? "on" : ""}" onclick="setView('room')">Room seating</button><button class="${view === "candidate" ? "on" : ""}" onclick="setView('candidate')">By candidate</button><button class="${view === "proctor" ? "on" : ""}" onclick="setView('proctor')">By proctor</button><button class="${view === "equipment" ? "on" : ""}" onclick="setView('equipment')">By equipment</button></div><span class="entry-count">Showing ${shown} of ${total} ${view === "room" ? "room bookings" : view === "equipment" ? "equipment requests" : "entries"}</span></div>${body}${total > visibleCount ? `<div class="pager"><button class="btn" onclick="showMore()">Show more (${Math.min(20, total - visibleCount)} more)</button></div>` : ""}${unusedResourcesSection()}<div class="tech-note"><strong>Allocation method:</strong> subject-pure room assignments, least-waste subset-sum room bundles when staffing permits, round-robin allocation when proctors are the bottleneck, one proctor per occupied room, protected contingency reserves, and independent room, proctor, and equipment checks. Unresolved entries may indicate resource shortages rather than a seating bug.</div><div class="actions"><button class="btn" onclick="go('data')">Manage data</button><button class="btn primary" onclick="generate()">Regenerate allocation</button></div>`;
       }
       function addRow(k) {
         if (!data[k]) return;
